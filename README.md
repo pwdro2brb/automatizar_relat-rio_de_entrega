@@ -8,3 +8,4 @@ Para fazer o código funcionar pela primeira vez, instale as dependências neces
 
 pip install pywin32
 pip install selenium
+pip install openpyxl
