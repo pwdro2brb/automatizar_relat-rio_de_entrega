@@ -32,10 +32,30 @@ try:
 except Exception as e:
   print(f"Erro ao iniciar o Chrome. Verifique seu chromedriver. {e}")
   exit()
-
-# --- Etapa 1: Clicar no Login da Microsoft ---
+# --- Etapa 1: Aceitar Cookies E Clicar no Login da Microsoft ---
 try:
   print("Aguardando página de login...")
+  
+  # --- ETAPA 1.A (NOVA): Aceitar o banner de Cookies ---
+  try:
+    print("Procurando o banner de cookies (OneTrust)...")
+    # Este é o ID padrão do botão "Aceitar" do OneTrust
+    accept_cookies_id = "onetrust-accept-btn-handler"
+    
+    # Espera o botão de cookies aparecer e ser clicável
+    cookie_button = WebDriverWait(driver, 10).until(
+      EC.element_to_be_clickable((By.ID, accept_cookies_id))
+    )
+    
+    print("Banner de cookies encontrado. Clicando em 'Aceitar'...")
+    cookie_button.click()
+    time.sleep(1) # Espera 1s para o banner fechar
+  except TimeoutException:
+    # Se o banner não aparecer (ex: já foi aceito), apenas avisa e continua
+    print("Banner de cookies não encontrado ou já aceito. Continuando...")
+  # --- FIM DA ETAPA 1.A ---
+
+  # --- ETAPA 1.B (Original): Clicar no Login da Microsoft ---
   microsoft_login_xpath = "//a[@data-provider='live']"
   
   print("Procurando o botão de login da Microsoft...")
@@ -47,10 +67,10 @@ try:
   microsoft_button.click()
 
 except Exception as e:
-  print(f"Erro ao tentar clicar no botão da Microsoft: {e}")
+  print(f"Erro na Etapa 1: {e}")
+  driver.save_screenshot("erro_etapa_1_cookies.png")
   driver.quit()
   exit()
-
 # --- Etapa 1.5: Lidar com o login da Microsoft (Versão Final) ---
 try:
   print("Aguardando a nova janela/aba de login da Microsoft...")
@@ -76,7 +96,7 @@ try:
     EC.presence_of_element_located((By.ID, "i0116")) 
   )
   print("Preenchendo e-mail da Microsoft...")
-  email_field_microsoft.send_keys("pedro.henrsilva@mrv.com.br")#Seu email aqui
+  email_field_microsoft.send_keys("pedro.henrsilva@mrv.com.br")
   WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "idSIButton9"))).click()
   
   # Preenche a senha (usando a variável segura)
